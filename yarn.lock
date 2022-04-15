@@ -10458,42 +10458,10 @@ stacktrace-parser@^0.1.10:
   dependencies:
     type-fest "^0.7.1"
 
-starknet@^2.5.1:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/starknet/-/starknet-2.9.0.tgz#a263e603a45441785991f2c18fcecd8722d6368b"
-  integrity sha512-i/wYJMR1DtkjagCNkPOwUsZLyyCYZtT533nJLdhL5CYw2K7ChuLQphhC8tSDKvrzMm0/PkthDVSI+xjYOPVdTw==
-  dependencies:
-    axios "^0.23.0"
-    bn.js "^5.2.0"
-    elliptic "^6.5.4"
-    ethereum-cryptography "^0.2.0"
-    hash.js "^1.1.7"
-    json-bigint "^1.0.0"
-    minimalistic-assert "^1.0.1"
-    pako "^2.0.4"
-    superstruct "^0.15.3"
-    url-join "^4.0.1"
-
-starknet@^3.2.0, starknet@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/starknet/-/starknet-3.5.1.tgz#b51fc89105235e14a71a576c60db5034e51d9734"
-  integrity sha512-iFmdx2FF16x1hItQysMVRvCQr2VYEp+WBfSk5c3VAyDI22HIa+5Zh3p9S6Q9YL2eLKJK8Ys/b2fRmeTPtnxHTw==
-  dependencies:
-    axios "^0.23.0"
-    bn.js "^5.2.0"
-    elliptic "^6.5.4"
-    ethereum-cryptography "^0.2.0"
-    hash.js "^1.1.7"
-    json-bigint "^1.0.0"
-    minimalistic-assert "^1.0.1"
-    pako "^2.0.4"
-    superstruct "^0.15.3"
-    url-join "^4.0.1"
-
-starknet@^3.7.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/starknet/-/starknet-3.8.0.tgz#a5bb99c46f6c25be82613d46f0a1b6849a9a39ce"
-  integrity sha512-di1jm9qaQuREk8nHt4mI1buaa23aW1iTx78Ro/+1BxlbJPa+uRQto2S6WxOG4H+GwAZTSWV6XPusGd/R7BGcng==
+starknet@^3.2.0, starknet@^3.5.1, starknet@^3.7.0, starknet@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/starknet/-/starknet-3.9.0.tgz#ee7a3d99effef0998b365d95dd85f9b01cdb463c"
+  integrity sha512-/sn3WHFX7f+A3vVf3I+Kamg2KIW6494vpCcZWA09IQ5RZXrozjaBtYWT41SoKKWZ3b0Xg8WF//SOkRVCTZOZkQ==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.26.0"
     "@ledgerhq/hw-transport" "^6.24.1"
