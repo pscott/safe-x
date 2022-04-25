@@ -13,24 +13,39 @@ const [wallet_0, wallet_1, wallet_2, wallet_3, wallet_4] =
 
 const tx1 = {
   to: wallet_1.address,
+<<<<<<< HEAD
   value: 0,
   data: "0x11",
+=======
+  value: 1,
+  data: '0x11',
+>>>>>>> l1_wallet_test
   operation: 0,
   nonce: 0,
 }
 
 const tx2 = {
   to: wallet_2.address,
+<<<<<<< HEAD
   value: 0,
   data: "0x22",
+=======
+  value: 2,
+  data: '0x22',
+>>>>>>> l1_wallet_test
   operation: 0,
   nonce: 0,
 }
 
 const tx3 = {
   to: wallet_3.address,
+<<<<<<< HEAD
   value: 0,
   data: "0x33",
+=======
+  value: 4,
+  data: '0x33',
+>>>>>>> l1_wallet_test
   operation: 0,
   nonce: 0,
 }
