@@ -1,5 +1,5 @@
 import { Field, Form, Formik } from "formik"
-import { Link } from "react-router-dom"
+import Link from 'next/link'
 
 const SpaceForm: React.FC = () => {
   return (
@@ -22,9 +22,9 @@ const SpaceForm: React.FC = () => {
 const SpaceFactory: React.FC = () => {
   return (
     <div className="spaceFactory">
-      <Link to={"/"}> Go back home</Link>
+      <Link href={"/"}> Go back home</Link>
       <h1>Create a space</h1>
-      First go to the <Link to={"/whitelist-factory"}>whitelist factory</Link>,
+      First go to the <Link href={"/whitelist-factory"}>whitelist factory</Link>,
       you will deploy the whitelist. You will get an address from it, paste it
       below to deploy the space.
       <SpaceForm />

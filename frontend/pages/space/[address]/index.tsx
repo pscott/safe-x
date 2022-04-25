@@ -1,8 +1,10 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Link, useParams } from "react-router-dom"
-import { getSpace } from "../service/state-updater"
-import { Account, Proposal, Space, State } from "../types"
+import { useRouter } from 'next/router'
+import Link from 'next/link'
+
+import { getSpace } from "../../../src/service/state-updater"
+import { Account, Proposal, Space, State } from "../../../src/types"
 
 const Proposals: React.FC<{ spaceAddress: string; proposals: Proposal[] }> = ({
   spaceAddress,
@@ -13,7 +15,7 @@ const Proposals: React.FC<{ spaceAddress: string; proposals: Proposal[] }> = ({
       {proposals.map((proposal) => {
         return (
           <div key={proposal.id} className="proposalLink">
-            <Link to={`/space/${spaceAddress}/${proposal.id}`}></Link>
+            <Link href={`/space/${spaceAddress}/${proposal.id}`}></Link>
           </div>
         )
       })}
@@ -45,21 +47,23 @@ const SpaceContainer: React.FC<{ space: Space | undefined }> = ({ space }) => {
 }
 
 const SpacePage: React.FC = () => {
-  const { spaceAddress } = useParams() as { spaceAddress: string }
+  const router = useRouter()
+  const { address } = router.query
+
   const { spaceMap } = useSelector<State, State>((state) => state)
   const dispatch = useDispatch()
 
-  const space = spaceMap[spaceAddress]
+  const space = spaceMap[address as string]
   useEffect(() => {
     if (space === undefined) {
-      getSpace(dispatch, spaceAddress)
+      getSpace(dispatch, address as string)
     }
-  }, [spaceAddress])
+  }, [address])
 
   return (
     <div>
-      <Link to="/">Back home</Link>
-      <p>welcome to space {spaceAddress}</p>
+      <Link href="/">Back home</Link>
+      <p>welcome to space {address}</p>
       <SpaceContainer space={space} />
     </div>
   )

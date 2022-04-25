@@ -1,6 +1,6 @@
 import React from "react"
 import { Formik, Form, Field, FieldArray } from "formik"
-import { Link } from "react-router-dom"
+import Link from 'next/link'
 
 export const AddressList = () => (
   <div>
@@ -47,7 +47,7 @@ export const AddressList = () => (
 const WhitelistFactory: React.FC = () => {
   return (
     <div className="whitelistFactory">
-      <Link to={"/"}> Go back home</Link>
+      <Link href={"/"}> Go back home</Link>
       <h1>Create a whitelist</h1>
       <p>Input the signers, they are ethereum wallets</p>
       <AddressList />

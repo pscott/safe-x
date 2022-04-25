@@ -1,8 +1,10 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useParams } from "react-router-dom"
-import { getProposal, getSpace } from "../service/state-updater"
-import { Proposal, State } from "../types"
+
+import { getProposal, getSpace } from "../../../src/service/state-updater"
+
+import { Proposal, State } from "../../../src/types"
 
 const ProposalContainer: React.FC<{ proposal: Proposal | undefined }> = ({
   proposal,
