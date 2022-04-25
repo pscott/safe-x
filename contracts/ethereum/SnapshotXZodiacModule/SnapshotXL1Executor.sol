@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.9;
 
-import '@gnosis.pm/zodiac/contracts/core/Module.sol';
-import './ProposalRelayer.sol';
+import "@gnosis.pm/zodiac/contracts/core/Module.sol";
+import "./ProposalRelayer.sol";
 
 /**
  * @title Snapshot X L1 execution Zodiac module
@@ -136,7 +136,10 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
       address _starknetCore,
       uint256 _l2ExecutionRelayer,
       uint256[] memory _l2SpacesToWhitelist
-    ) = abi.decode(initParams, (address, address, address, address, uint256, uint256[]));
+    ) = abi.decode(
+        initParams,
+        (address, address, address, address, uint256, uint256[])
+      );
     __Ownable_init();
     transferOwnership(_owner);
     avatar = _avatar;
@@ -164,7 +167,10 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
    * @param toAdd List of addresses to add to the whitelist.
    * @param toRemove List of addressess to remove from the whitelist.
    */
-  function editWhitelist(uint256[] memory toAdd, uint256[] calldata toRemove) external onlyOwner {
+  function editWhitelist(uint256[] memory toAdd, uint256[] calldata toRemove)
+    external
+    onlyOwner
+  {
     // Add the requested entries
     for (uint256 i = 0; i < toAdd.length; i++) {
       whitelistedSpaces[toAdd[i]] = true;
@@ -191,14 +197,22 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
     bytes32[] memory _txHashes
   ) external {
     //External call will fail if finalized proposal message was not received on L1.
-    _receiveFinalizedProposal(callerAddress, proposalOutcome, executionHashLow, executionHashHigh);
-    require(whitelistedSpaces[callerAddress] == true, 'Invalid caller');
-    require(proposalOutcome != 0, 'Proposal did not pass');
-    require(_txHashes.length > 0, 'proposal must contain transactions');
+    _receiveFinalizedProposal(
+      callerAddress,
+      proposalOutcome,
+      executionHashLow,
+      executionHashHigh
+    );
+    require(whitelistedSpaces[callerAddress] == true, "Invalid caller");
+    require(proposalOutcome != 0, "Proposal did not pass");
+    require(_txHashes.length > 0, "proposal must contain transactions");
 
     // Re-assemble the lowest and highest bytes to get the full execution hash
     uint256 executionHash = (executionHashHigh << 128) + executionHashLow;
-    require(bytes32(executionHash) == keccak256(abi.encode(_txHashes)), 'Invalid execution');
+    require(
+      bytes32(executionHash) == keccak256(abi.encode(_txHashes)),
+      "Invalid execution"
+    );
 
     proposalIndexToProposalExecution[proposalIndex].txHashes = _txHashes;
     proposalIndex++;
@@ -218,9 +232,12 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
     bytes32[] memory _txHashes
   ) external {
     require(callerAddress != 0);
-    require(proposalOutcome == 1, 'Proposal did not pass');
-    require(_txHashes.length > 0, 'proposal must contain transactions');
-    require(bytes32(executionHash) == keccak256(abi.encode(_txHashes)), 'Invalid execution');
+    require(proposalOutcome == 1, "Proposal did not pass");
+    require(_txHashes.length > 0, "proposal must contain transactions");
+    require(
+      bytes32(executionHash) == keccak256(abi.encode(_txHashes)),
+      "Invalid execution"
+    );
     proposalIndexToProposalExecution[proposalIndex].txHashes = _txHashes;
     proposalIndex++;
     emit ProposalReceived(proposalIndex);
@@ -230,24 +247,30 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
    * @dev Cancels a set of proposals
    * @param _proposalIndexes Array of proposal indexes that should be cancelled
    */
-  function cancelProposals(uint256[] memory _proposalIndexes) external onlyOwner {
+  function cancelProposals(uint256[] memory _proposalIndexes)
+    external
+    onlyOwner
+  {
     for (uint256 i = 0; i < _proposalIndexes.length; i++) {
       require(
         getProposalState(_proposalIndexes[i]) != ProposalState.NotReceived,
-        'Proposal not received, nothing to cancel'
+        "Proposal not received, nothing to cancel"
       );
       require(
         getProposalState(_proposalIndexes[i]) != ProposalState.Executed,
-        'Execution completed, nothing to cancel'
+        "Execution completed, nothing to cancel"
       );
       require(
-        proposalIndexToProposalExecution[_proposalIndexes[i]].cancelled == false,
-        'proposal is already cancelled'
+        proposalIndexToProposalExecution[_proposalIndexes[i]].cancelled ==
+          false,
+        "proposal is already cancelled"
       );
       //to cancel a proposal, we can set the execution counter for the proposal to the number of transactions in the proposal.
       //We must also set a boolean in the Proposal Execution struct to true, without this there would be no way for the state to differentiate between a cancelled and an executed proposal.
       proposalIndexToProposalExecution[_proposalIndexes[i]]
-        .executionCounter = proposalIndexToProposalExecution[_proposalIndexes[i]].txHashes.length;
+        .executionCounter = proposalIndexToProposalExecution[
+        _proposalIndexes[i]
+      ].txHashes.length;
       proposalIndexToProposalExecution[_proposalIndexes[i]].cancelled = true;
       emit ProposalCancelled(_proposalIndexes[i]);
     }
@@ -273,10 +296,10 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
       proposalIndexToProposalExecution[_proposalIndex].txHashes[
         proposalIndexToProposalExecution[_proposalIndex].executionCounter
       ] == txHash,
-      'Invalid transaction or invalid transaction order'
+      "Invalid transaction or invalid transaction order"
     );
     proposalIndexToProposalExecution[_proposalIndex].executionCounter++;
-    require(exec(to, value, data, operation), 'Module transaction failed');
+    require(exec(to, value, data, operation), "Module transaction failed");
     emit TransactionExecuted(_proposalIndex, txHash);
     if (getProposalState(_proposalIndex) == ProposalState.Executed) {
       emit ProposalExecuted(_proposalIndex);
@@ -299,7 +322,13 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
     Enum.Operation[] memory operations
   ) external {
     for (uint256 i = 0; i < tos.length; i++) {
-      executeProposalTx(_proposalIndex, tos[i], values[i], data[i], operations[i]);
+      executeProposalTx(
+        _proposalIndex,
+        tos[i],
+        values[i],
+        data[i],
+        operations[i]
+      );
     }
   }
 
@@ -309,15 +338,24 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
    * @dev Returns state of proposal
    * @param _proposalIndex Index of proposal
    */
-  function getProposalState(uint256 _proposalIndex) public view returns (ProposalState) {
-    ProposalExecution storage proposalExecution = proposalIndexToProposalExecution[_proposalIndex];
+  function getProposalState(uint256 _proposalIndex)
+    public
+    view
+    returns (ProposalState)
+  {
+    ProposalExecution
+      storage proposalExecution = proposalIndexToProposalExecution[
+        _proposalIndex
+      ];
     if (proposalExecution.txHashes.length == 0) {
       return ProposalState.NotReceived;
     } else if (proposalExecution.cancelled) {
       return ProposalState.Cancelled;
     } else if (proposalExecution.executionCounter == 0) {
       return ProposalState.Received;
-    } else if (proposalExecution.txHashes.length == proposalExecution.executionCounter) {
+    } else if (
+      proposalExecution.txHashes.length == proposalExecution.executionCounter
+    ) {
       return ProposalState.Executed;
     } else {
       return ProposalState.Executing;
@@ -329,8 +367,12 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
    * @param _proposalIndex Index of proposal
    * @return numTx Number of transactions in the proposal
    */
-  function getNumOfTxInProposal(uint256 _proposalIndex) public view returns (uint256 numTx) {
-    require(_proposalIndex < proposalIndex, 'Invalid Proposal Index');
+  function getNumOfTxInProposal(uint256 _proposalIndex)
+    public
+    view
+    returns (uint256 numTx)
+  {
+    require(_proposalIndex < proposalIndex, "Invalid Proposal Index");
     return proposalIndexToProposalExecution[_proposalIndex].txHashes.length;
   }
 
@@ -340,9 +382,15 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
    * @param txIndex Index of transaction in proposal
    * @param txHash Transaction Hash
    */
-  function getTxHash(uint256 _proposalIndex, uint256 txIndex) public view returns (bytes32 txHash) {
-    require(_proposalIndex < proposalIndex, 'Invalid Proposal Index');
-    require(txIndex < proposalIndexToProposalExecution[_proposalIndex].txHashes.length);
+  function getTxHash(uint256 _proposalIndex, uint256 txIndex)
+    public
+    view
+    returns (bytes32 txHash)
+  {
+    require(_proposalIndex < proposalIndex, "Invalid Proposal Index");
+    require(
+      txIndex < proposalIndexToProposalExecution[_proposalIndex].txHashes.length
+    );
     return proposalIndexToProposalExecution[_proposalIndex].txHashes[txIndex];
   }
 
@@ -357,9 +405,13 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
     view
     returns (bool isExecuted)
   {
-    require(_proposalIndex < proposalIndex, 'Invalid Proposal Index');
-    require(txIndex < proposalIndexToProposalExecution[_proposalIndex].txHashes.length);
-    return proposalIndexToProposalExecution[_proposalIndex].executionCounter > txIndex;
+    require(_proposalIndex < proposalIndex, "Invalid Proposal Index");
+    require(
+      txIndex < proposalIndexToProposalExecution[_proposalIndex].txHashes.length
+    );
+    return
+      proposalIndexToProposalExecution[_proposalIndex].executionCounter >
+      txIndex;
   }
 
   /**
@@ -378,11 +430,26 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
     uint256 nonce
   ) public view returns (bytes memory txHashData) {
     uint256 chainId = block.chainid;
-    bytes32 domainSeparator = keccak256(abi.encode(DOMAIN_SEPARATOR_TYPEHASH, chainId, this));
-    bytes32 transactionHash = keccak256(
-      abi.encode(TRANSACTION_TYPEHASH, to, value, keccak256(data), operation, nonce)
+    bytes32 domainSeparator = keccak256(
+      abi.encode(DOMAIN_SEPARATOR_TYPEHASH, chainId, this)
     );
-    return abi.encodePacked(bytes1(0x19), bytes1(0x01), domainSeparator, transactionHash);
+    bytes32 transactionHash = keccak256(
+      abi.encode(
+        TRANSACTION_TYPEHASH,
+        to,
+        value,
+        keccak256(data),
+        operation,
+        nonce
+      )
+    );
+    return
+      abi.encodePacked(
+        bytes1(0x19),
+        bytes1(0x01),
+        domainSeparator,
+        transactionHash
+      );
   }
 
   /**
@@ -399,6 +466,7 @@ contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
     bytes memory data,
     Enum.Operation operation
   ) public view returns (bytes32 txHash) {
-    return keccak256(generateTransactionHashData(to, value, data, operation, 0));
+    return
+      keccak256(generateTransactionHashData(to, value, data, operation, 0));
   }
 }
