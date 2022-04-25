@@ -1,7 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 import { expect } from "chai"
 import { Contract, ContractFactory } from "ethers"
-import { starknet, network, ethers } from "hardhat"
+import { starknet, network, ethers, waffle } from "hardhat"
 import { FOR, SplitUint256 } from "../starknet/shared/types"
 import {
   StarknetContractFactory,
@@ -29,7 +29,7 @@ const { getSelectorFromName } = stark
 // Dummy tx
 const tx1 = {
   to: VITALIK_STRING_ADDRESS,
-  value: 0,
+  value: 1,
   data: "0x11",
   operation: 0,
   nonce: 0,
@@ -38,7 +38,7 @@ const tx1 = {
 // Dummy tx 2
 const tx2 = {
   to: VITALIK_STRING_ADDRESS,
-  value: 0,
+  value: 1,
   data: "0x22",
   operation: 0,
   nonce: 0,
@@ -103,6 +103,8 @@ describe("Create proposal, cast vote, and send execution to l1", function () {
 
     const signers = await ethers.getSigners()
     signer = signers[0]
+    
+
 
     MockStarknetMessaging = (await ethers.getContractFactory(
       "MockStarknetMessaging",
@@ -121,12 +123,8 @@ describe("Create proposal, cast vote, and send execution to l1", function () {
       signer
     )
     l1Executor = await l1ExecutorFactory.deploy(
-      owner,
-      avatar,
-      target,
       starknetCore,
-      relayer,
-      [BigInt(spaceContract.address)]
+      relayer
     )
     await l1Executor.deployed()
   })
@@ -262,44 +260,16 @@ describe("Create proposal, cast vote, and send execution to l1", function () {
     }
 
     // Check that l1 can receive the proposal correctly
-    {
+
       const proposalOutcome = BigInt(1)
 
-      const fakeTxHashes = txHashes.slice(0, -1)
       const callerAddress = BigInt(spaceContract.address)
-      const fakeCallerAddress = BigInt(zodiacRelayer.address)
       // Check that if the tx hash is incorrect, the transaction reverts.
-      await expect(
-        l1Executor.receiveProposal(
-          callerAddress,
-          proposalOutcome,
-          executionHash.low,
-          executionHash.high,
-          fakeTxHashes
-        )
-      ).to.be.reverted
 
-      // Check that if `proposalOutcome` parameter is incorrect, transaction reverts.
-      await expect(
-        l1Executor.receiveProposal(
-          callerAddress,
-          !proposalOutcome,
-          executionHash.low,
-          executionHash.high,
-          txHashes
-        )
-      ).to.be.reverted
-
-      // Check that if `callerAddress` parameter is incorrect, transaction reverts.
-      await expect(
-        l1Executor.receiveProposal(
-          fakeCallerAddress,
-          proposalOutcome,
-          executionHash.low,
-          executionHash.high,
-          txHashes
-        )
-      ).to.be.reverted
+      const tx = await signer.sendTransaction({
+        to: l1Executor.address,
+        value: ethers.utils.parseEther("10")
+    });
 
       // Check that it works when provided correct parameters.
       await l1Executor.receiveProposal(
@@ -307,8 +277,11 @@ describe("Create proposal, cast vote, and send execution to l1", function () {
         proposalOutcome,
         executionHash.low,
         executionHash.high,
-        txHashes
+        [tx1.to, tx2.to],
+        [tx1.value, tx2.value],
+        [tx1.data, tx2.data],
+        [tx1.operation, tx2.operation]
       )
-    }
+
   })
 })
