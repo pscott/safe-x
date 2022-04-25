@@ -15,14 +15,14 @@ const ConnectToWallet = () => {
   const { connect, connectors, account } = useStarknet()
   return (
     <div>
-      {account === undefined &&
+      <h4>{account === undefined &&
         connectors.map((connector) =>
           connector.available() ? (
             <button key={connector.id} onClick={() => connect(connector)}>
               Connect {connector.name}
             </button>
           ) : null
-        )}
+        )}</h4>
     </div>
   )
 }
