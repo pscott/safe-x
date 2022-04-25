@@ -1,5 +1,8 @@
+import "../src/index.css"
+
 import type { AppProps } from "next/app"
 import { Provider } from "react-redux"
+import { Provider as StarknetJsProvider } from "starknet"
 import { configureStore } from "@reduxjs/toolkit"
 import slice from "../src/slice"
 
@@ -32,6 +35,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <StarknetProvider
         connectors={[new InjectedConnector({ showModal: true })]}
+        defaultProvider={
+          new StarknetJsProvider({ baseUrl: "http://localhost:5000" })
+        }
       >
         <>
           <ConnectToWallet />
