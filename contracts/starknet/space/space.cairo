@@ -13,7 +13,7 @@ from contracts.starknet.lib.proposal_outcome import ProposalOutcome
 from contracts.starknet.execution.interface import IExecutionStrategy
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.uint256 import Uint256, uint256_add, uint256_lt
-from starkware.cairo.common.hash_state import hash_init, hash_update
+from contracts.starknet.lib.hash_pedersen import hash_pedersen
 
 @storage_var
 func voting_delay() -> (delay : felt):
@@ -105,19 +105,6 @@ func update_controller{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_c
     controller_edited.emit(previous_controller, new_controller)
 
     return ()
-end
-
-# Internal utility function to hash data.
-# Dev note: starkware.py and starknet.js methods for hashing an array append the length of the array to the end before hashing.
-# So if you wish to compare `hash_pedersen` to the off-chain hashing methods, make sure you append the length of the array before
-# feeding it to `hash_pedersen`!
-func hash_pedersen{pedersen_ptr : HashBuiltin*}(calldata_len : felt, calldata : felt*) -> (
-        hash : felt):
-    let (hash_state_ptr) = hash_init()
-    let (hash_state_ptr) = hash_update{hash_ptr=pedersen_ptr}(
-        hash_state_ptr, calldata, calldata_len)
-
-    return (hash_state_ptr.current_hash)
 end
 
 func assert_valid_authenticator{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(

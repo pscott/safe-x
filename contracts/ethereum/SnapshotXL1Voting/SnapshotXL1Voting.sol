@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import './Interfaces/IStarknetCore.sol';
+import "./Interfaces/IStarknetCore.sol";
 
 /**
  * @title Snapshot X L1 Voting contract
@@ -42,7 +42,12 @@ abstract contract SnapshotXL1Voting {
    * @param voter Address of the voter
    * @param choice The vote {1,2,3}
    */
-  event L1VoteSubmitted(uint256 votingContract, uint256 proposalID, address voter, uint256 choice);
+  event L1VoteSubmitted(
+    uint256 votingContract,
+    uint256 proposalID,
+    address voter,
+    uint256 choice
+  );
 
   /**
    * @dev Emitted when a new proposal is submitted via L1 vote
@@ -94,7 +99,9 @@ abstract contract SnapshotXL1Voting {
     emit L1VoteSubmitted(votingContract, proposalID, msg.sender, choice);
   }
 
-  function proposeOnL1(uint256 executionHash, uint256 metadataHash) external virtual;
+  function proposeOnL1(uint256 executionHash, uint256 metadataHash)
+    external
+    virtual;
 
   function delegateOnL1(
     uint256 proposalID,
