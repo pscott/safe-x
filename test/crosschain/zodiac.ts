@@ -119,7 +119,7 @@ describe("Create proposal, cast vote, and send execution to l1", function () {
     const starknetCore = mockStarknetMessaging.address
     const relayer = BigInt(zodiacRelayer.address)
     l1ExecutorFactory = await ethers.getContractFactory(
-      "SnapshotXL1Executor",
+      "SafeX",
       signer
     )
     l1Executor = await l1ExecutorFactory.deploy(

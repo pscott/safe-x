@@ -12,7 +12,7 @@ import "./Interfaces/IStarknetCore.sol";
  * @notice Trustless L1 execution of Snapshot X decisions via a Gnosis Safe
  * @dev Work in progress
  */
-contract SnapshotXL1Executor is Module, SnapshotXProposalRelayer {
+contract SafeX is Module, SnapshotXProposalRelayer {
   /// @dev keccak256("EIP712Domain(uint256 chainId,address verifyingContract)");
   bytes32 public constant DOMAIN_SEPARATOR_TYPEHASH =
     0x47e79534a245952e8b16893a336b85a3d9ea9fa8c573f3d803afb92a79469218;
