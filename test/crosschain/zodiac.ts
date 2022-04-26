@@ -15,7 +15,7 @@ import { EIP712_TYPES } from "../ethereum/shared/utils"
 import {
   VITALIK_ADDRESS,
   VITALIK_STRING_ADDRESS,
-  vanillaSetup,
+  setup,
   EXECUTE_METHOD,
   PROPOSAL_METHOD,
   VOTE_METHOD,
@@ -98,8 +98,8 @@ describe("Create proposal, cast vote, and send execution to l1", function () {
       vanillaSpace: spaceContract,
       vanillaAuthenticator: authContract,
       vanillaVotingStrategy: votingContract,
-      zodiacRelayer,
-    } = await vanillaSetup())
+      relayerContract: zodiacRelayer,
+    } = await setup(0))
 
     const signers = await ethers.getSigners()
     signer = signers[0]

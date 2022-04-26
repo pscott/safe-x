@@ -5,7 +5,7 @@ from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address, call_contract
 from contracts.starknet.lib.hash_pedersen import hash_pedersen
 from starkware.cairo.common.memcpy import memcpy
-from starkware.cairo.common.math import assert_le
+from starkware.cairo.common.math import {assert_le, unsigned_div_rem}
 from openzeppelin.account.library import Call
 from starkware.cairo.common.alloc import alloc
 
@@ -30,12 +30,16 @@ func execute_call_array{syscall_ptr : felt*}(calls_len : felt, calls : Call*, re
     end
 
     # do the current call
-    let this_call : Call = [calls]
+    let this_call : Call = calls[0]
     let res = call_contract(
         contract_address=this_call.to,
         function_selector=this_call.selector,
         calldata_size=this_call.calldata_len,
         calldata=this_call.calldata)
+
+    with_attr error_message("get rekt"):
+        assert 1 = 0
+    end
 
     # copy the result in response
     memcpy(response, res.retdata, res.retdata_size)
@@ -68,12 +72,19 @@ func execute{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr :
         assert res = execution_hash.low
     end
 
-    let calls : Call* = cast(&execution_params[1], Call*)
     # execution_params[-1] is actually the length (see hash_pedersen comments)
     # so make sure we substract 2 and not just one
     let calls_len_in_felts = (execution_params_len - 2)
+
+
     # Should be a round number because it should be divisible by Call.SIZE
-    let calls_len = calls_len_in_felts / Call.SIZE
+    let (calls_lem, rest) = unsigned_div_rem(calls_len_in_felts, Call.SIZE)
+
+    with_attr error_message("Incorrect calls len"):
+        assert rest = 0
+    end
+
+    let calls : Call* = cast(&execution_params[1], Call*)
 
     let (response : felt*) = alloc()
     execute_call_array(calls_len, calls, response)
