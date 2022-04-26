@@ -5,7 +5,7 @@ from starkware.cairo.common.uint256 import Uint256
 from starkware.starknet.common.syscalls import get_caller_address, call_contract
 from contracts.starknet.lib.hash_pedersen import hash_pedersen
 from starkware.cairo.common.memcpy import memcpy
-from starkware.cairo.common.math import {assert_le, unsigned_div_rem}
+from starkware.cairo.common.math import (assert_le, unsigned_div_rem)
 from openzeppelin.account.library import Call
 from starkware.cairo.common.alloc import alloc
 
@@ -78,7 +78,7 @@ func execute{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr :
 
 
     # Should be a round number because it should be divisible by Call.SIZE
-    let (calls_lem, rest) = unsigned_div_rem(calls_len_in_felts, Call.SIZE)
+    let (calls_len, rest) = unsigned_div_rem(calls_len_in_felts, Call.SIZE)
 
     with_attr error_message("Incorrect calls len"):
         assert rest = 0
