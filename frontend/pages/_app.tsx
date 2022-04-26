@@ -18,6 +18,12 @@ import Image from "next/image"
 
 const store = configureStore({ reducer: slice.reducer })
 
+const shortenAddress = (address: string): string => {
+  const first = address.substring(0, 6)
+  const second = address.substring(address.length - 4)
+  return `${first}...${second}`
+}
+
 const ConnectToWallet = () => {
   const { connect, connectors, account } = useStarknet()
   return (
@@ -34,7 +40,7 @@ const ConnectToWallet = () => {
         {account === undefined ? (
           <p className="please">Please connect your Argent wallet</p>
         ) : (
-          <p className="please">Connected to {account}</p>
+          <p className="please">Connected to {shortenAddress(account)}</p>
         )}
       </h4>
     </div>
@@ -54,7 +60,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <h3>
             {" "}
             <Link href={"/"}>
-              <Image src={logo} />
+              <a>
+                <Image src={logo} />
+              </a>
             </Link>
           </h3>
           <ConnectToWallet />

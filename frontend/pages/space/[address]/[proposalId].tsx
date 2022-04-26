@@ -1,10 +1,11 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Link, useParams } from "react-router-dom"
+import Link from 'next/link'
 
 import { getProposal, getSpace } from "../../../src/service/state-updater"
 
 import { Proposal, State } from "../../../src/types"
+import { useRouter } from "next/router"
 
 const ProposalContainer: React.FC<{ proposal: Proposal | undefined }> = ({
   proposal,
@@ -13,38 +14,35 @@ const ProposalContainer: React.FC<{ proposal: Proposal | undefined }> = ({
   return (
     <div className="proposal">
       <h1>Proposal #{proposal.id}</h1>
-      <ul>
+      <div>
         {proposal.signers.map((signer) => {
-          return <li key={signer.address}>{signer.address}</li>
+          return <div key={signer.address}>{signer.address}</div>
         })}
-      </ul>
+      </div>
     </div>
   )
 }
 
 const ProposalPage: React.FC = () => {
-  const { spaceAddress, proposalId } = useParams() as {
-    spaceAddress: string
-    proposalId: string
-  }
+  const router = useRouter()
+  const { address, proposalId } = router.query
   const dispatch = useDispatch()
   const { spaceMap } = useSelector<State, State>((state) => state)
-  const space = spaceMap[spaceAddress]
+  const space = spaceMap[address as string]
   const proposal = space ? space.proposals[Number(proposalId)] : undefined
 
   useEffect(() => {
     if (space === undefined) {
-      getSpace(dispatch, spaceAddress)
+      getSpace(dispatch, address as string)
     } else if (proposal === undefined) {
-      getProposal(dispatch, spaceAddress, Number(proposalId))
+      getProposal(dispatch, address as string, Number(proposalId))
     }
-  }, [spaceAddress, proposalId, space])
+  }, [address, proposalId, space])
 
   return (
     <div>
-      <Link to="/">Back home</Link>
       <p>
-        welcome to proposal {proposalId} in space {spaceAddress}
+        welcome to proposal {proposalId} in space {address}
       </p>
       <ProposalContainer proposal={proposal} />
     </div>
