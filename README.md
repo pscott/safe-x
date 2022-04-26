@@ -2,11 +2,15 @@
 
 # Safe X
 
-A Gas Efficient MultiSig 
+A Gas Efficient MultiSig Implementation 
 
 #### Documentation
 
 A Ethereum multisig wallet that is controlled by a set of contracts on Starknet. This leads to a significant reduction in gas cost to authenticate signers of the multisig without any reduction in security. 
+
+![alt text](./architecture.png)
+
+![alt text](./gasSavings.png)
 
 
 
