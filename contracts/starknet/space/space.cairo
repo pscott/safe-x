@@ -90,8 +90,7 @@ end
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(
         _voting_delay : felt, _voting_duration : felt, _proposal_threshold : Uint256,
-        _quorum : felt, _executor : felt, _voting_strategy : felt,
-        _authenticator : felt):
+        _quorum : felt, _executor : felt, _voting_strategy : felt, _authenticator : felt):
     # Sanity checks
     with_attr error_message("Invalid constructor parameters"):
         assert_nn(_voting_delay)

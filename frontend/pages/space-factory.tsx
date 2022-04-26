@@ -1,5 +1,6 @@
 import { Field, Form, Formik } from "formik"
-import { Link } from "react-router-dom"
+import { useStarknet } from "@starknet-react/core"
+import Link from "next/link"
 
 const SpaceForm: React.FC = () => {
   return (
@@ -10,7 +11,11 @@ const SpaceForm: React.FC = () => {
       {() => (
         <div>
           <Form>
-            <Field name="whitelistAddress" />
+            <Field
+              name="whitelistAddress"
+              placeholder="0x57736560d694debafd8f346b..."
+              className="main"
+            />
             <button type="submit">Deploy</button>
           </Form>
         </div>
@@ -20,13 +25,20 @@ const SpaceForm: React.FC = () => {
 }
 
 const SpaceFactory: React.FC = () => {
+  const { account } = useStarknet()
+
   return (
     <div className="spaceFactory">
-      <Link to={"/"}> Go back home</Link>
+      {account === undefined ? (
+        <p>Please connect your Argent wallet</p>
+      ) : (
+        <p>Connected to {account}</p>
+      )}
       <h1>Create a space</h1>
-      First go to the <Link to={"/whitelist-factory"}>whitelist factory</Link>,
-      you will deploy the whitelist. You will get an address from it, paste it
+      First go to the <Link href={"/whitelist-factory"}>whitelist factory</Link>
+      , you will deploy the whitelist. You will get an address from it, paste it
       below to deploy the space.
+      <p></p>
       <SpaceForm />
     </div>
   )
