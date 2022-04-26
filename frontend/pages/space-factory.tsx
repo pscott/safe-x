@@ -51,6 +51,7 @@ const SpaceFactory: React.FC = () => {
   const { account, library } = useStarknet()
   const [loading, setLoading] = useState<boolean>()
   const [spaceAddress, setSpaceAddress] = useState<string>()
+  const [loadingMessages, setLoadingMessages] = useState<string[]>([])
 
   const deploySpace = async (values: any) => {
     setLoading(true)
@@ -63,26 +64,24 @@ const SpaceFactory: React.FC = () => {
       authenticatorCompiled as CompiledContract,
       library as Provider
     )
-
+    setLoadingMessages(["Deploying relayer..."])
     const relayerContract = await relayer.deploy()
-    const authenticatorContract = await relayer.deploy()
-
-    /*{
-      whitelistAddress: "",
-      delay: "",
-      duration: "",
-      proposalThreshold: "",
-      quorum: "",
-    }*/
-
-    /*_voting_delay : felt, _voting_duration : felt, _proposal_threshold : Uint256,
-        _quorum : felt, _executor : felt, _voting_strategy : felt, _authenticator : felt)*/
+    setLoadingMessages([
+      "Deploying relayer... ✔️",
+      "Deploying authenticator...",
+    ])
+    const authenticatorContract = await authenticator.deploy()
 
     const space = new ContractFactory(
       spaceCompiled as CompiledContract,
       library as Provider
     )
 
+    setLoadingMessages([
+      "Deploying relayer... ✔️",
+      "Deploying authenticator... ✔️",
+      "Deploying space contract... almost there!",
+    ])
     const spaceAddress = await space.deploy([
       values.delay,
       values.duration,
@@ -92,6 +91,12 @@ const SpaceFactory: React.FC = () => {
       relayerContract.address,
       values.whitelist,
       authenticatorContract.address,
+    ])
+
+    setLoadingMessages([
+      "Deploying relayer... ✔️",
+      "Deploying authenticator... ✔️",
+      "Deploying space contract... almost there! ✔️",
     ])
 
     setSpaceAddress(spaceAddress.address)
@@ -105,13 +110,25 @@ const SpaceFactory: React.FC = () => {
       below to deploy the space.
       <p></p>
       {loading ? (
-        <div>loading... please be patient</div>
+        <div>
+          {spaceAddress === undefined && (
+            <img
+              src={
+                "https://icon-library.com/images/loading-icon-transparent-background/loading-icon-transparent-background-12.jpg"
+              }
+              height={200}
+            />
+          )}
+          {loadingMessages.map((msg) => (
+            <p key={msg}>{msg}</p>
+          ))}
+        </div>
       ) : (
         <SpaceForm deploySpace={deploySpace} />
       )}
       {spaceAddress && (
         <div>
-          <p>Here you go, click here to get to your space!</p>
+          <p>🎊 🎊 🎊 Here you go, click here to get to your space!</p>
           <Link href={`/space/${spaceAddress}`}>
             <a>{spaceAddress}</a>
           </Link>
