@@ -10,7 +10,7 @@ A Ethereum multisig wallet that is controlled by a set of contracts on Starknet.
 
 ![alt text](./architecture.png)
 
-![alt text](./gasSavings.png)
+![alt text](./gasSavings.jpg)
 
 
 
