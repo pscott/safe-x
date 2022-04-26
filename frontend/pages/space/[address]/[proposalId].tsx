@@ -12,9 +12,14 @@ import { ethers } from "ethers"
 import { useContract, useStarknetInvoke } from "@starknet-react/core"
 import authenticatorAbi from "../../../starknet-artifacts/contracts/starknet/authenticator/authenticator.cairo/authenticator_abi.json"
 import { Abi } from "starknet"
+import slice from "../../../src/slice"
 
-const SignButton: React.FC<{ spaceAddress: string }> = ({ spaceAddress }) => {
+const SignButton: React.FC<{ spaceAddress: string; proposalId: number }> = ({
+  spaceAddress,
+  proposalId,
+}) => {
   const web3React = useWeb3React()
+  const dispatch = useDispatch()
   const { contract } = useContract({
     abi: authenticatorAbi as Abi,
     address: spaceAddress,
@@ -30,11 +35,20 @@ const SignButton: React.FC<{ spaceAddress: string }> = ({ spaceAddress }) => {
       web3React.account
     )
 
-    const signature = await signer.signMessage("This is a test message")
+    const signature = await signer.signMessage(
+      `Signing proposal ${proposalId} in space ${spaceAddress}`
+    )
     console.log("alright")
     const invokeResult = await invoke.invoke({ args: [] })
     console.log("done")
     console.log(invokeResult)
+    dispatch(
+      slice.actions.includeInProposal({
+        spaceAddress,
+        proposalId,
+        ethAddress: account,
+      })
+    )
   }
   const connectToWeb3 = () => {
     const injected = new Web3InjectedConnector({ supportedChainIds: [5] })
@@ -53,13 +67,25 @@ const SignButton: React.FC<{ spaceAddress: string }> = ({ spaceAddress }) => {
 const ProposalContainer: React.FC<{ proposal: Proposal | undefined }> = ({
   proposal,
 }) => {
+  const web3React = useWeb3React()
+  const { account } = web3React
   if (proposal === undefined) return <div>loading</div>
   return (
     <div className="proposal">
       <h1>Proposal #{proposal.id}</h1>
       <div>
+        <h1>Signature list</h1>
         {proposal.signers.map((signer) => {
-          return <div key={signer.address}>{signer.address}</div>
+          return (
+            <div
+              style={{
+                fontWeight: account === signer.address ? "bold" : undefined,
+              }}
+              key={signer.address}
+            >
+              {account === signer.address && "THIS IS YOU >>>>  "}{signer.address} {account === signer.address && "<<<<<<  "}
+            </div>
+          )
         })}
       </div>
     </div>
@@ -87,7 +113,10 @@ const ProposalPage: React.FC = () => {
       <p>
         welcome to proposal {proposalId} in space {address}
       </p>
-      <SignButton spaceAddress={address as string} />
+      <SignButton
+        spaceAddress={address as string}
+        proposalId={Number(proposalId)}
+      />
       <ProposalContainer proposal={proposal} />
     </div>
   )
