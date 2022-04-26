@@ -1,20 +1,18 @@
 import { Formik, Form, Field, FieldArray } from "formik"
 import Link from "next/link"
-import Image from "next/image"
-// @ts-ignore
-import mypic from "./logo.svg"
 
 import whitelistContract from "../starknet-artifacts/contracts/starknet/strategies/whitelist.cairo/whitelist.json"
 import whitelistAbi from "../starknet-artifacts/contracts/starknet/strategies/whitelist.cairo/whitelist_abi.json"
 import { useStarknet } from "@starknet-react/core"
-import { ContractFactory } from "starknet"
-import { CompiledContract } from "starknet"
+import { CompiledContract, ContractFactory } from "starknet"
 import { Provider } from "starknet"
 import { Abi } from "starknet"
 import { BigNumberish } from "starknet/dist/utils/number"
+import { useState } from "react"
 
 export const AddressList: React.FC<{
   deploy: (addresses: BigNumberish[]) => Promise<void>
+
 }> = ({ deploy }) => (
   <div>
     <Formik
@@ -67,6 +65,7 @@ export const AddressList: React.FC<{
 
 const WhitelistFactory: React.FC = () => {
   const { library } = useStarknet()
+  const [whitelistAddr, setwhitelistAdrr] = useState<string>()
   const deployWhitelist = async (addresses: BigNumberish[]) => {
     const whitelist = new ContractFactory(
       whitelistContract as CompiledContract,
@@ -77,7 +76,7 @@ const WhitelistFactory: React.FC = () => {
       addresses.length,
       ...addresses,
     ])
-    console.log(whitelistAddress)
+    setwhitelistAdrr(whitelistAddress.address)
   }
 
   return (
@@ -85,6 +84,7 @@ const WhitelistFactory: React.FC = () => {
       <h1>Create a whitelist</h1>
       <p>Input the signers, they are ethereum wallets</p>
       <AddressList deploy={deployWhitelist} />
+      {whitelistAddr && <div>whitelist deployed at {whitelistAddr}</div>}
     </div>
   )
 }

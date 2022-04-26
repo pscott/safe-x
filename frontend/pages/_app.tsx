@@ -31,6 +31,11 @@ const ConnectToWallet = () => {
               </button>
             ) : null
           )}
+        {account === undefined ? (
+          <p className="please">Please connect your Argent wallet</p>
+        ) : (
+          <p className="please">Connected to {account}</p>
+        )}
       </h4>
     </div>
   )

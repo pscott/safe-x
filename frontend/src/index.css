@@ -23,9 +23,11 @@ h3 {
 h4 {
   text-align: right;
 }
-p {
+
+.please {
   text-align: right;
 }
+
 button {
   background-color: black; /* Green */
   border: none;
