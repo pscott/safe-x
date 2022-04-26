@@ -9,35 +9,41 @@ import spaceCompiled from "../starknet-artifacts/contracts/starknet/space/space.
 import { CompiledContract, ContractFactory, Provider, Abi } from "starknet"
 import { useState } from "react"
 
+const getSavings = (people: number): number => {
+  const fullcost = people * 10
+  return fullcost - 4
+}
+
 const SpaceForm: React.FC<any> = (props) => {
   return (
     <Formik
       initialValues={{
         whitelistAddress: "",
-        delay: "",
-        duration: "",
-        proposalThreshold: "",
-        quorum: "",
+        quorum: 3,
       }}
       onSubmit={(values) => props.deploySpace(values)}
     >
-      {() => (
+      {({ values }) => (
         <div>
           <Form>
-            <p>whitelistAddress</p>
+            <p>Whitelist Contract Address</p>
             <Field
               name="whitelistAddress"
               placeholder="0x57736560d694debafd8f346b..."
               className="main"
             />
-            <p>delay</p>
-            <Field name="delay" placeholder="5" className="main" />
-            <p>duration</p>
-            <Field name="duration" placeholder="20" className="main" />
-            <p>proposalThreshold</p>
-            <Field name="proposalThreshold" placeholder="0" className="main" />
-            <p>quorum</p>
-            <Field name="quorum" placeholder="3" className="main" />
+            <p>Threshold</p>
+            <Field
+              type={"number"}
+              name="quorum"
+              placeholder="3"
+              className="main"
+            />
+            <p>Wow, you're saving about...</p>{" "}
+            <h1>
+              {getSavings(values.quorum)}${" "}
+              {"💸".repeat(Math.floor(values.quorum / 10))}
+            </h1>
             <p />
             <button type="submit">Deploy</button>
           </Form>
