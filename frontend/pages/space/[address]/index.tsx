@@ -31,7 +31,9 @@ const Whitelist: React.FC<{ whitelist: Account[] }> = ({ whitelist }) => {
       {whitelist.map((account) => {
         return (
           <div className="whitelistElement" key={account.address}>
-            {account.address}
+            <a href={`https://etherscan.io/address/${account.address}`}>
+              {account.address}
+            </a>
           </div>
         )
       })}

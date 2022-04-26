@@ -16,7 +16,16 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 
+import { Web3Provider } from "@ethersproject/providers"
+import {  Web3ReactProvider } from "@web3-react/core"
+
 const store = configureStore({ reducer: slice.reducer })
+
+function getLibrary(provider: any): Web3Provider {
+  const library = new Web3Provider(provider)
+  library.pollingInterval = 12000
+  return library
+}
 
 const shortenAddress = (address: string): string => {
   const first = address.substring(0, 6)
@@ -50,25 +59,27 @@ const ConnectToWallet = () => {
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
-      <StarknetProvider
-        connectors={[new InjectedConnector({ showModal: true })]}
-        defaultProvider={
-          new StarknetJsProvider({ baseUrl: "http://localhost:5000" })
-        }
-      >
-        <>
-          <h3>
-            {" "}
-            <Link href={"/"}>
-              <a>
-                <Image src={logo} />
-              </a>
-            </Link>
-          </h3>
-          <ConnectToWallet />
-          <Component {...pageProps} />
-        </>
-      </StarknetProvider>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <StarknetProvider
+          connectors={[new InjectedConnector({ showModal: true })]}
+          defaultProvider={
+            new StarknetJsProvider({ baseUrl: "http://localhost:5000" })
+          }
+        >
+          <>
+            <h3>
+              {" "}
+              <Link href={"/"}>
+                <a>
+                  <Image src={logo} />
+                </a>
+              </Link>
+            </h3>
+            <ConnectToWallet />
+            <Component {...pageProps} />
+          </>
+        </StarknetProvider>
+      </Web3ReactProvider>
     </Provider>
   )
 }

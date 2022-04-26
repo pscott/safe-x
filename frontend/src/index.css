@@ -45,3 +45,21 @@ input {
   width: 470px;
   height: 40px;
 }
+
+.whitelistElement {
+  padding: 1%;
+}
+
+.tablething {
+  
+  margin-left: auto;
+  margin-right: auto;
+}
+
+th {
+  height: 70px;
+}
+
+td {
+  height: 30px;
+}
